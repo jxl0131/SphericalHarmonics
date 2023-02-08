@@ -3,19 +3,37 @@ Spherical harmonics for radiance maps in Python (numpy).
 
 I wrote this code because I found it was difficult to obtain coefficients for a radiance map from existing libraries (especially in Python).
 
+
 Features:
 - Obtain coefficients for a radiance map (in equirectangular format)
+
+!!! 1 radiance map，指环境贴图（Environment maps）
+
 - Numpy vectorised for efficiency
 - Windowing function for reducing ringing artefacts
+
+!!! 4 两个去除振铃效应的方法
+    A low pass filter is done in the frequency domain by smoothing out the higher frequency coefficients (this can be done by windowing). I have two ways of supporting this. The main one is "applyWindowing(...)". The second is the "filterAmount" variable (which just blurs the input image before calculating the coefficients). Alternatively you can do your own weighted falloff on the coefficients.
+
+    Then use the coefficients to reconstruct the radiance map.
+
+    This is basically a way of reconstructing the light with less ringing artifacts.
+
+    Let me know how it goes.
 - Reconstruct radiance map from coefficients
+
+!!! 2 从球谐系数复原环境贴图，可以选择用足够多的球谐系数完整复原，也可以选择用少量低阶系数复原出环境贴图中的低频部分。
 - Obtain diffuse BRDF coefficients
 - Render a diffuse map (given radiance map coefficients)
+
+!!! 3 diffuse map，指的是能直接渲染朗伯体的图，入射光线与法向的效果之和。等同于辐照度环境贴图（irradiance environment map），是一张储存各法向辐照度的图，是由表面法线索引的漫反射贴图。
 - Supports an arbitrary number of bands 
 - Plot the spherical harmonics in a figure
 - Render a ground truth diffuse map to compare with. 
 
 The ground truth diffuse map can be a little slow to compute, so I've added the ability to render the diffuse values at a low resolution while sampling the high resolution source image. After rendering at a low resolution, I increase the resolution (so it's easier to see) using Lanczos interpolation. I found doing it this way was the most efficient while also producing high quality ground truth images.
 
+!!! 4 Lanczos插值具有速度快，效果好，性价比最高的优点，这也是目前此算法比较流行的原因
 # Usage
 python sphericalHarmonics.py [string filename.ext] [int nBands]
 
